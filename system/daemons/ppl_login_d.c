@@ -46,7 +46,7 @@ string *reserved_id = ({  });
 
 nomask void reset_newchar()
 {
-	newchar = allocate_mapping(0);	
+	newchar = allocate_mapping(0);
 }
 
 nomask void reset_cmdlimit()
@@ -64,7 +64,7 @@ private void set_user_cmdlimit( string ip )
 {
 	// 再 check 一次
 	if( login_ip_num[ip] >= 30 )
-	{	
+	{
 		if( !(IP_D->query_ip(ip)) )
 		{
 			IP_D->set_ip( this_object(), ip, BAN, 24*3600);
@@ -102,7 +102,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 					tell( ob, sprintf( HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登入。\n"NOR, query_ip_number(ob)));
 					destruct(ob);
 					return;
-				}	
+				}
 			}
 
 			if(sscanf( query_ip_name(ob), "%*s.%*s.%s.edu.tw", ban )==3)
@@ -112,8 +112,8 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 					tell( ob, HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登入。\n"NOR, query_ip_number(ob));
 					destruct(ob);
 					return;
-				}	
-			}			
+				}
+			}
 
 
 			if( time() - ip_time[ip] < 60 )
@@ -122,7 +122,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 				CHANNEL_D->channel_broadcast("nch", ip +" 的使用者離上次 login 時間過短, 拒絕登入 !");
 				destruct(ob);
 				return;
-			} 
+			}
 
 			ob->directly_receive("Current charset is " + (query("encode/gb", ob) ? "Simplified Chinese (GB)":"Traditional Chinese (BIG5)") + "\n");
 			ob->directly_receive("Please input GB/BIG5 to change charset or directly login user.\n");
@@ -137,7 +137,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 		}
 		/* 輸入 ID */
 	case INPUT_ID:
-		{	
+		{
 			int level_num;
 
 			if( !arg || arg == "" )
@@ -147,12 +147,14 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 
 			if( arg == "gb" )
 			{
+				delete("encode/big5", ob);
 				set("encode/gb", 1, ob);
 				return this_object()->logon(ob);
 			}
 			else if( arg == "big5" )
 			{
 				delete("encode/gb", ob);
+				set("encode/big5", 1, ob);
 				return this_object()->logon(ob);
 			}
 
@@ -165,13 +167,13 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 					tell(ob, "抱歉您所使用的 ip ，無法再註冊新角色。\n");
 					return logon_handle(INITIALIZE, ob);
 				}
-				
-				if( query_ip_name(ob)[<13..] == "csupomona.edu" ) 
+
+				if( query_ip_name(ob)[<13..] == "csupomona.edu" )
 				{
 					tell(ob, "抱歉您所使用的 ip ，無法再註冊新角色。\n");
 					return logon_handle(INITIALIZE, ob);
 				}
-				
+
 				if( ++newchar[ip] >= 5 )
 				{
 					CHANNEL_D->channel_broadcast("sys", "登入："+ip+" 的使用者本日新角色已註冊超過 "+5+" 位，無法再註冊新角色。");
@@ -222,7 +224,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			tell(ob, "請輸入密碼：");
 
 			input_to( (: logon_handle, INPUT_PASSWORD, ob :), 1 );
-			return;           
+			return;
 		}
 	case FPASS_ID:
 		{
@@ -298,24 +300,24 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			int len;
 			string ban;
 
-			if( sscanf( query_ip_name(ob), "%*s-%*s-%*s-%*s.dynamic.%s.net", ban ) ==5 ) 
+			if( sscanf( query_ip_name(ob), "%*s-%*s-%*s-%*s.dynamic.%s.net", ban ) ==5 )
 			{
 				if( ban == "hinet" )
 				{
 					tell( ob, sprintf(HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登錄新角色。\n"NOR, query_ip_number(ob)));
 					destruct(ob);
 					return;
-				}			
+				}
 			}
 
-			if( sscanf( query_ip_name(ob), "%*s-%*s-%*s-%*s..HINET-IP.%s.net", ban ) ==5 ) 
+			if( sscanf( query_ip_name(ob), "%*s-%*s-%*s-%*s..HINET-IP.%s.net", ban ) ==5 )
 			{
 				if( ban == "hinet" )
 				{
 					tell( ob, sprintf(HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登錄新角色。\n"NOR, query_ip_number(ob)));
 					destruct(ob);
 					return;
-				}			
+				}
 			}
 
 			if(sscanf( query_ip_name(ob), "%*s.%s.edu.tw", ban )==2)
@@ -325,9 +327,9 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 					tell( ob, HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登錄新角色。\n"NOR, query_ip_number(ob));
 					destruct(ob);
 					return;
-				}	
+				}
 			}
-			
+
 			if(sscanf( query_ip_name(ob), "%*s.%*s.%s.edu", ban )== 3)
 			{
 				if( ban = "csupomona" )
@@ -335,9 +337,9 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 					tell( ob, HIR"\n警告，您所使用的 IP(%s) 位置目前被系統列為禁止登錄新角色。\n"NOR, query_ip_number(ob));
 					destruct(ob);
 					return;
-				}	
+				}
 			}
-			
+
 			if( !arg || arg == "" )
 			{
 				tell(ob, "請輸入您想使用的英文代號(ID)：");
@@ -353,7 +355,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			}
 
 			foreach( string a in arg )
-			if( (int) a<'a' || (int) a>'z' ) 
+			if( (int) a<'a' || (int) a>'z' )
 			{
 				tell(ob, "對不起，你的英文名字只能用英文字母。\n請輸入您想使用的英文代號(ID)：");
 				input_to( (: logon_handle, INPUT_NEW_ID, ob :) );return;
@@ -396,7 +398,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			}
 
 			if( strsrch(arg, "　") != -1 || strsrch(arg, " ") != -1 )
-			{                	
+			{
 				tell(ob, "請勿用空格來當做名稱。\n請輸入名稱：");
 				input_to( (: logon_handle, INPUT_NEW_NAME, ob :) ); return;
 			}
@@ -415,10 +417,10 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			tell(ob, "歡迎"+arg+"("+capitalize(query("id", ob))+")進入"MUD_FULL_NAME"。\n");
 			tell(ob, "請輸入您想使用的密碼：");
 			input_to( (: logon_handle, INPUT_NEW_PASSWORD, ob :), 1 );
-			return;	
+			return;
 		}
 
-		/* 輸入新的密碼 */        
+		/* 輸入新的密碼 */
 	case INPUT_NEW_PASSWORD:
 		{
 			if( !arg || strlen(arg) < 4 )
@@ -466,9 +468,9 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 		/* 設定性別 */
 	case INPUT_GENDER:
 		{
-			if( arg == "m" || arg == "M" ) 
+			if( arg == "m" || arg == "M" )
 				set("gender", MALE_GENDER, ob);
-			else if( arg == "f" || arg == "F" ) 
+			else if( arg == "f" || arg == "F" )
 				set("gender", FEMALE_GENDER, ob);
 			else
 			{
@@ -477,7 +479,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			}
 
 			return logon_handle(NEW_PLAYER, ob);
-		}	
+		}
 
 		/* 新玩家登錄 */
 	case NEW_PLAYER:
@@ -602,7 +604,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			// 記錄該 ip 上線時間
 			string ip = query_ip_number(ob);
 			ip_time[ip] = time();
-			
+
 			// 記錄該 ip 上線次數
 			if( !login_ip_num[ip] )
 				login_ip_num[ip] = 1;
@@ -613,7 +615,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 				set_user_cmdlimit(ip);
 			} else
 				login_ip_num[ip] = ( login_ip_num[ip] + 1 );
-			
+
 			// 進入遊戲
 			LOGIN_D->enter_game(ob);
 			return;
@@ -634,6 +636,11 @@ void wait_for_login(object login_ob, string arg)
 
 nomask void logon(object login_ob)
 {
+	set("encode/gb", 1, login_ob);
+	if (query("encode/big5", login_ob)) {
+		delete("encode/gb", login_ob);
+	}
+
 	/* 載入系統 */
 	if( !SYSTEM_D->valid_login() )
 	{

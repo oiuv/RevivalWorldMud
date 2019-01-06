@@ -32,7 +32,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 	ob->reset_time_out(); // 重設Time_out時間
 
 	if( arg && query("encode/gb", ob) ) arg = G2B(arg);
-	
+
 	switch(state)
 	{
 	/* 啟始 Login */
@@ -46,25 +46,27 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 
 			return;
 		}
-		
+
 	/* 輸入 ID */
 	case INPUT_ID:
-		{	
+		{
 			int level_num;
-			
+
 			if( !arg || arg == "" )
 				return logon_handle(INITIALIZE, ob);
-			
+
 			arg = remove_ansi(remove_fringe_blanks(lower_case(arg)));
-			
+
 			if( arg == "gb" )
 			{
+				delete("encode/big5", ob);
 				set("encode/gb", 1, ob);
 				return this_object()->logon(ob);
 			}
 			else if( arg == "big5" )
 			{
 				delete("encode/gb", ob);
+				set("encode/big5", 1, ob);
 				return this_object()->logon(ob);
 			}
 
@@ -73,21 +75,21 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 				tell(ob, "本遊戲沒有 "+arg+" 這位巫師。\n", CONNECTFAILED);
 				return logon_handle(INITIALIZE, ob);
 			}
-			
+
 			level_num = SECURE_D->level_num(arg);
-			
+
 			if( level_num < GUEST )
 			{
 				tell(ob, HIG"只有巫師才能從連接埠 "+WIZ_PORT+" 登入，玩家請從 "+PPL_PORT+" 登入。\n"NOR, CONNECTFAILED);
 				return logon_handle(INITIALIZE, ob);
 			}
-			
+
 			if( level_num < LOGIN_D->query_wiz_lock() )
 			{
 				tell(ob, HIY"系統更新維護中，目前僅允許權限在 "+SECURE_D->level_num_to_level_name(LOGIN_D->query_wiz_lock())+" 以上的使用者連線。\n"NOR, CONNECTFAILED);
 				return logon_handle(INITIALIZE, ob);
 			}
-			
+
 			if( LOGIN_D->is_repeat_login(arg) )
 			{
 				tell(ob, "抱歉您輸入的 "+capitalize(arg)+" 正在被登錄中，請勿重覆登錄。\n", CONNECTFAILED);
@@ -98,7 +100,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 
 			tell(ob, "請輸入密碼：", CLIENTIGNORE);
 			input_to( (: logon_handle, INPUT_PASSWORD, ob :), 1 );
-			return;           
+			return;
 		}
 
 	/* 輸入密碼 */
@@ -109,13 +111,13 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			if( !arg || crypt(arg, password) != password )
 			{
 				tell(ob, "密碼輸入錯誤。\n", CONNECTFAILED);
-					
+
 				if( LOGIN_D->input_wrong_password(ob) >= 3 )
 				{
 					tell(ob, "你已經輸入錯誤密碼三次，請重新登入再試。\n", CONNECTFAILED);
 					destruct(ob); return;
 				}
-				
+
 				tell(ob, "請輸入正確密碼：", CLIENTIGNORE);
 				input_to( (: logon_handle, INPUT_PASSWORD, ob :), 1 ); return;
 			}
@@ -124,7 +126,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 			if( find_player(query("id", ob)) )
 			{
 				set("player", find_player(query("id", ob)), ob);
-				
+
 				// 若為互動物件, 則詢問是否取代
 				if( interactive(query("player", ob)) )
 				{
@@ -144,11 +146,11 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 	case OLD_PLAYER:
 		{
 			object user_ob = load_user(query("id", ob));
-			
+
 			if( !objectp(user_ob) )
 			{
 				object login_ob = new(LOGIN_OB);
-				
+
 				tell(ob, "無法載入 "+capitalize(query("id", ob))+" 的儲存檔，請聯絡巫師處理。\n", CONNECTFAILED);
 				exec(login_ob, ob);
 				destruct(ob);
@@ -176,12 +178,12 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 	case RECONNECT:
 		{
 			object reconnect_ob;
-			
+
 			if( !arg || remove_ansi(remove_fringe_blanks(lower_case(arg))) != "y" )
 			{
 				tell(ob, "您決定不取代遊戲中相同的人物。\n", CONNECTFAILED);
 				ob->reset_database();
-				
+
 				logon_handle(INITIALIZE, ob);return;
 			}
 
@@ -191,15 +193,15 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 				ob->reset_database();
 				logon_handle(INITIALIZE, ob);return;
 			}
-				
+
 			if( !interactive(reconnect_ob) )
 				reconnect_ob->reconnect();
 			else
 			{
 				object temp = new(VOID_OB);
-				
+
 				tell(reconnect_ob, "另外一位使用者自 "+query_ip_name(ob)+" 連線取代了你。\n", ETCMSG);
-				
+
 				/* 先將原本的玩家轉換至一個暫時 USER_OB 再將之摧毀 */
 				exec(temp, reconnect_ob);
 				destruct(temp);
@@ -225,7 +227,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 
 	/* 進入遊戲 */
 	case ENTER_GAME:
-		{	
+		{
 			// 進入遊戲
 			LOGIN_D->enter_game(ob);
 			return;
@@ -233,7 +235,7 @@ private nomask varargs void logon_handle(int state, object ob, string arg)
 		}/* ENTER_GAME */
 
 	default: return logon_handle(INITIALIZE, ob);
-	
+
 	}/* END SWITCH */
 }
 
@@ -244,6 +246,11 @@ void wait_for_login(object login_ob, string arg)
 }
 nomask void logon(object login_ob)
 {
+	set("encode/gb", 1, login_ob);
+	if (query("encode/big5", login_ob)) {
+		delete("encode/gb", login_ob);
+	}
+
 	/* 載入系統 */
 	if( !SYSTEM_D->valid_login() )
 	{
