@@ -4,9 +4,9 @@
  * File   : html_d.c
  * Author : Clode@RevivalWorld
  * Date   : 2002-1-21
- * Note   : 
+ * Note   :
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
  *
  -----------------------------------------
  */
@@ -84,7 +84,7 @@ string BLACK_FOOTER = @LONG
 <p><hr width=80% align=center>
 <table width=80% align=center>
   <tr>
-    <td align=center><font face=verdana size=2 color=bbbbbb>Copyright &copy;2000-2007 <a href="http://www.revivalworld.org"><font color=fffff><u>重生的世界</u></a> <font color=bbbbbb> All Rights Reserved</font></td>
+    <td align=center><font face=verdana size=2 color=bbbbbb>Copyright &copy;2018-2019</font> <a href="http://www.revivalworld.org"><font color=fffff><u>重生的世界</u></font></a> <font color=bbbbbb> All Rights Reserved</font></td>
 
   </tr>
 </table>
@@ -93,28 +93,28 @@ string BLACK_FOOTER = @LONG
 <!-- Created by 重生的世界 %^UPDATETIME%^ -->
 LONG;
 
-mapping HI_TABLE_16 = 	
+mapping HI_TABLE_16 =
 ([
-30		:	"<font color=999999>",
-31		:	"<font color=ff0000>",
-32		:	"<font color=00ff00>",
-33		:	"<font color=ffff00>",
-34		:	"<font color=0000ff>",
-35		:	"<font color=ff00ff>",
-36		:	"<font color=99ffff>",
-37		:	"<font color=ffffff>",
+30		:	"</font><font color=999999>",
+31		:	"</font><font color=ff0000>",
+32		:	"</font><font color=00ff00>",
+33		:	"</font><font color=ffff00>",
+34		:	"</font><font color=0000ff>",
+35		:	"</font><font color=ff00ff>",
+36		:	"</font><font color=99ffff>",
+37		:	"</font><font color=ffffff>",
 ]);
 
 mapping LO_TABLE_16 =
 ([
-30		:	"<font color=999999>",
-31		:	"<font color=991111>",
-32		:	"<font color=119911>",
-33		:	"<font color=999911>",
-34		:	"<font color=111199>",
-35		:	"<font color=991199>",
-36		:	"<font color=009999>",
-37		:	"<font color=999999>",	
+30		:	"</font><font color=999999>",
+31		:	"</font><font color=991111>",
+32		:	"</font><font color=119911>",
+33		:	"</font><font color=999911>",
+34		:	"</font><font color=111199>",
+35		:	"</font><font color=991199>",
+36		:	"</font><font color=009999>",
+37		:	"</font><font color=999999>",
 ]);
 
 mapping ANSI_TO_16;
@@ -128,9 +128,9 @@ string translate_to_html(string content)
 
 	foreach(string color, string b16 in ANSI_TO_16)
 		content = replace_string(content, color, b16);
-	
+
 	content = remove_ansi(content);
-	
+
 	return content;
 }
 
@@ -143,20 +143,20 @@ void make_html(string content, mapping index)
 	string filename = index["filename"] || "/www/tmp.html";
 	string title = index["title"] || "無標題";
 	int refresh = index["refresh"];
-	
+
 
 	text = bgcolor == "black" ? BLACK_HEADER : WHITE_HEADER;
 	text = terminal_colour(text, ([
-		"TITLE"		:	title,
-		"REFRESH"	:	refresh?("<meta http-equiv='refresh' content='"+refresh+"'; url='"+filename+"'>"):"",
+		"TITLE"		:	"重生的世界(Map)--Mud.Ren",
+		"REFRESH"	:	refresh?("<meta http-equiv='refresh' content='"+refresh+"; url="+filename+"'>"):"",
 		"UPDATETIME"	:	TIME_D->replace_ctime(time()),
 	]));
-	
-	text += "<div style='font-size:"+fontsize+"px;font-family:"+fontface+";'><nobr>";
+
+	text += "<div style='font-size:"+fontsize+"px;font-family:"+fontface+";text-align:center;'><font>";
 	text += translate_to_html(content);
-	text += "</div>";
+	text += "</font></div>";
 	text += bgcolor == "black" ? BLACK_FOOTER : WHITE_FOOTER;
-	
+
 
 	write_file(filename, text, 1);
 }
@@ -170,16 +170,16 @@ void create_map_html()
 	int maptype;
 
 	text += "<table cellpadding=0 cellspacing=0 align=center style='border:0px solid #555;width:600px;'><tr><td style='background:#fff;font-size:20px;color:#884;'><b>．即時世界地圖</b><hr></td></tr></table>";
-	
+
 	text += "<table cellpadding=0 cellspacing=0 align=center style='border:3px double #555;width:800px;'>";
 	for(y=20;y>=-20;y--)
 	{
 		text += "<tr height=20>";
-		
+
 		for(x=-20;x<=20;x++)
 		{
 			worldmapdata = MAP_D->query_world_map(x, y);
-			
+
 			if( !worldmapdata )
 				text += "<td width=20 bgcolor=#000000>　</td>";
 			else if( CITY_D->city_exist(worldmapdata[0], worldmapdata[1]) )
@@ -193,10 +193,10 @@ void create_map_html()
 					text += "<td width=20 bgcolor=#000077><center><a href='map/areamap_"+replace_string(worldmapdata[0], " ", "%20")+"_"+worldmapdata[1]+".html' target=_blank><font size=3 color=000077>█</a></td>";
 			}
 		}
-		
+
 		text += "</tr>";
 	}
-	
+
 	text += "</table>";
 	text += "<table cellpadding=0 cellspacing=0 align=center style='border:3px double #555;width:600px;'><tr height=30><td width=30 bgcolor=#555577>　</td><td width=90>城市</td><td width=30 bgcolor=#55aa55>　</td><td width=90>郊區</td><td width=30 bgcolor=#000077>　</td><td width=90>海洋</td><td width=30 bgcolor=#000000>　</td><td width=90>無區域</td></tr></table><br><br><br>";
 
@@ -212,7 +212,7 @@ void create_map_html()
 			text += "<tr>";
 			text += "<td style='font-size:18px;width:100px;background:#000;'>"+CITY_D->query_city_name(map)+"</b></td>";
 			text += "<td style='font-size:18px;width:200px;background:#000;'>"+(CITY_D->query_section_info(map, num, "name")||"第 "+(num+1)+" 衛星都市")+"</td>";
-			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='/online/rw/map/citymap_"+replace_string(map, " ", "%20")+"_"+num+".html' target=_blank><font color=#ffffff>HTML文字圖</font></a></td>";
+			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='/www/map/citymap_"+replace_string(map, " ", "%20")+"_"+num+".html' target=_blank><font color=#ffffff>HTML文字圖</font></a></td>";
 			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='rwmap.php?map=citymap_"+replace_string(map, " ", "%20")+"_"+num+"_ansi&size=10' target=_blank><font color=#ffffff>JAVA圖(小)</font></a></td>";
 			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='rwmap.php?map=citymap_"+replace_string(map, " ", "%20")+"_"+num+"_ansi&size=14' target=_blank><font color=#ffffff>JAVA圖(大)</font></a></td>";
 			text += "</tr>";
@@ -221,7 +221,7 @@ void create_map_html()
 		text += "<tr><td colspan=5 style='border-top:1px solid #111;background:#000;font-size:1px;'>&nbsp;</td></tr>";
 	}
 	text += "</table><br><br><br>";
-	
+
 	text += "<table cellpadding=0 cellspacing=0 align=center style='border:0px solid #555;width:600px;'><tr><td style='background:#fff;font-size:20px;color:#484;'><b>．即時郊區地圖</b><hr></td></tr></table>";
 	text += "<table cellpadding=0 cellspacing=0 align=center style='border:3px double #555;padding:3px;width:600px;'>";
 	foreach(map in AREA_D->query_areas())
@@ -232,7 +232,7 @@ void create_map_html()
 			text += "<tr>";
 			text += "<td style='font-size:18px;width:100px;background:#000;'>"+AREA_D->query_area_name(map)+"</td>";
 			text += "<td style='font-size:18px;width:200px;background:#000;'>"+(AREA_D->query_section_info(map, num, "name")||"第 "+(num+1)+" 分區")+"</td>";
-			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='/online/rw/map/areamap_"+replace_string(map, " ", "%20")+"_"+num+".html' target=_blank><font color=#ffffff>HTML文字圖</a></font></td>";
+			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='/www/map/areamap_"+replace_string(map, " ", "%20")+"_"+num+".html' target=_blank><font color=#ffffff>HTML文字圖</a></font></td>";
 			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='rwmap.php?map=areamap_"+replace_string(map, " ", "%20")+"_"+num+"_ansi&size=10' target=_blank><font color=#ffffff>JAVA圖(小)</font></a></td>";
 			text += "<td style='font-size:12px;width:100px;background:#000;'><a href='rwmap.php?map=areamap_"+replace_string(map, " ", "%20")+"_"+num+"_ansi&size=14' target=_blank><font color=#ffffff>JAVA圖(大)</font></a></td>";
 			text += "</tr>";
@@ -241,7 +241,7 @@ void create_map_html()
 		text += "<tr><td colspan=5 style='border-top:1px solid #111;background:#000;font-size:1px;'>&nbsp;</td></tr>";
 	}
 	text += "</table>";
-	
+
 	make_html(text, (["filename":"/www/map.html", "title":"即時地圖", "fontsize":15,"fontface":"細明體"]));
 }
 
@@ -251,7 +251,7 @@ void create_stock_html()
 	string enterprise;
 	mapping data;
 	string text = "<center><table cellpadding=0 cellspacing=0 style='border:3px double #555;padding:10px;'>";
-	
+
 	foreach(enterprise, data in ENTERPRISE_D->query_enterprises())
 	{
 		number = data["enterprise_id_number"];
@@ -269,15 +269,15 @@ void create_html()
 	create_map_html();
 	create_stock_html();
 }
-	
+
 void create()
 {
 	int fcolor, bcolor;
-	
+
 	ANSI_TO_16 = allocate_mapping(0);
 
 	ANSI_TO_16[ESC+"[0m"] = "<font color=999999>";
-	ANSI_TO_16[ESC+"[m"] = "<font color=999999>";
+	ANSI_TO_16[ESC+"[m"] = "</font><font color=999999>";
 
 	for(fcolor=30;fcolor<=37;fcolor++)
 	{
@@ -285,7 +285,7 @@ void create()
 		ANSI_TO_16[ESC+"[0;"+fcolor+"m"] = LO_TABLE_16[fcolor];
 		ANSI_TO_16[ESC+"[1;"+fcolor+"m"] = HI_TABLE_16[fcolor];
 		ANSI_TO_16[ESC+"["+fcolor+";1m"] = LO_TABLE_16[fcolor];
-	
+
 		for(bcolor=41;bcolor<=47;bcolor++)
 		{
 			ANSI_TO_16[ESC+"["+fcolor+";"+bcolor+"m"] = HI_TABLE_16[fcolor];
@@ -293,18 +293,18 @@ void create()
 
 			ANSI_TO_16[ESC+"[0;"+fcolor+";"+bcolor+"m"] = LO_TABLE_16[fcolor];
 			ANSI_TO_16[ESC+"[0;"+bcolor+";"+fcolor+"m"] = LO_TABLE_16[fcolor];
-			
+
 			ANSI_TO_16[ESC+"[1;"+fcolor+";"+bcolor+"m"] = HI_TABLE_16[fcolor];
 			ANSI_TO_16[ESC+"[1;"+bcolor+";"+fcolor+"m"] = HI_TABLE_16[fcolor];
-			
+
 			ANSI_TO_16[ESC+"["+fcolor+";1;"+bcolor+"m"] = HI_TABLE_16[fcolor];
 			ANSI_TO_16[ESC+"["+bcolor+";1;"+fcolor+"m"] = HI_TABLE_16[fcolor];
-			
+
 			ANSI_TO_16[ESC+"["+fcolor+";"+bcolor+";1m"] = HI_TABLE_16[fcolor];
 			ANSI_TO_16[ESC+"["+bcolor+";"+fcolor+";1m"] = HI_TABLE_16[fcolor];
 		}
 	}
-	
+
 	create_html();
 }
 
