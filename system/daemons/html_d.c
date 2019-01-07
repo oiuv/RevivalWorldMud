@@ -35,7 +35,7 @@ string WHITE_HEADER = @LONG
     <td align=center style='font-familiy:verdana;font-size:15px;color:#555;'>本頁面由系統自動建置，更新時間為 %^UPDATETIME%^</td>
   </tr>
 </table>
-<hr width=80% align=center><p>
+<hr width=80% align=center>
 LONG;
 
 
@@ -59,7 +59,7 @@ string BLACK_HEADER = @LONG
     <td align=center style='font-familiy:verdana;font-size:15px;color:#bbb;'>本頁面由系統自動建置，更新時間為 %^UPDATETIME%^</td>
   </tr>
 </table>
-<hr width=80% align=center><p>
+<hr width=80% align=center>
 LONG;
 
 
@@ -69,7 +69,7 @@ string WHITE_FOOTER = @LONG
 <p><hr width=80% align=center>
 <table width=80% align=center>
   <tr>
-    <td align=center><font face=verdana size=2 color=555555>Copyright &copy;2000-2007 <a href="http://www.revivalworld.org"><font color=111111><u>重生的世界</u></a> <font color=555555> All Rights Reserved</font></td>
+    <td align=center><font face=verdana size=2 color=555555>Copyright &copy;2000-2007 </font><a href="http://www.revivalworld.org"><font color=111111><u>重生的世界</u></font></a> <font color=555555> All Rights Reserved</font></td>
 
   </tr>
 </table>
@@ -84,7 +84,7 @@ string BLACK_FOOTER = @LONG
 <p><hr width=80% align=center>
 <table width=80% align=center>
   <tr>
-    <td align=center><font face=verdana size=2 color=bbbbbb>Copyright &copy;2018-2019</font> <a href="http://www.revivalworld.org"><font color=fffff><u>重生的世界</u></font></a> <font color=bbbbbb> All Rights Reserved</font></td>
+    <td align=center><font face=verdana size=2 color=bbbbbb>Copyright &copy;2018-2019</font> <a href="https://github.com/oiuv/RevivalWorldMud"><font color=fffff><u>重生的世界</u></font></a> <font color=bbbbbb> All Rights Reserved</font></td>
 
   </tr>
 </table>
@@ -141,13 +141,13 @@ void make_html(string content, mapping index)
 	int fontsize = index["fontsize"] || 12;
 	string fontface = index["fontface"] || "新細明體";
 	string filename = index["filename"] || "/www/tmp.html";
-	string title = index["title"] || "無標題";
+	string title = "重生的世界(Map)--Mud.Ren" || index["title"];
 	int refresh = index["refresh"];
 
 
 	text = bgcolor == "black" ? BLACK_HEADER : WHITE_HEADER;
 	text = terminal_colour(text, ([
-		"TITLE"		:	"重生的世界(Map)--Mud.Ren",
+		"TITLE"		:	title,
 		"REFRESH"	:	refresh?("<meta http-equiv='refresh' content='"+refresh+"; url="+filename+"'>"):"",
 		"UPDATETIME"	:	TIME_D->replace_ctime(time()),
 	]));
@@ -257,7 +257,7 @@ void create_stock_html()
 		number = data["enterprise_id_number"];
 		text += "<tr><td style='font-size:15px;color:#fff;background:#000;'>企業名稱:"+data["color_id"]+"</td>";
 		text += "<td style='font-size:15px;color:#000'>目前股價:"+data["stockvalue"]+"</td></tr>";
-		text += "<tr><td colspan=2><a href='/online/rw/mrtg/stock/"+number+"/stock_"+number+".html'><img src='/online/rw/mrtg/stock/"+number+"/stock_"+number+"-day.png'></a></td></tr>";
+		text += "<tr><td colspan=2><a href='/www/mrtg/stock/"+number+"/stock_"+number+".html'><img src='/www/mrtg/stock/"+number+"/stock_"+number+"-day.png'></a></td></tr>";
 	}
 
 	text += "</table>";
@@ -276,7 +276,7 @@ void create()
 
 	ANSI_TO_16 = allocate_mapping(0);
 
-	ANSI_TO_16[ESC+"[0m"] = "<font color=999999>";
+	ANSI_TO_16[ESC+"[0m"] = "</font><font color=999999>";
 	ANSI_TO_16[ESC+"[m"] = "</font><font color=999999>";
 
 	for(fcolor=30;fcolor<=37;fcolor++)
