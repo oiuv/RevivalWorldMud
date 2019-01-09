@@ -26,7 +26,7 @@ void create()
 	set_idname(NOR YEL"flatbed tricycle", NOR YEL"平板車");
 
 	if( this_object()->set_shadow_ob() ) return;
-	
+
 	set("long", "一輛適合用來載重的木造平板車。\n");
 
 	set("unit", "台");
@@ -36,7 +36,7 @@ void create()
 	set("badsell", 1);
 
 	set(BUFF_LOADING_MAX, 2000);
-	set(BUFF_MOVING_STAMINA, -250);
-	
+	set(BUFF_MOVING_STAMINA, -50);
+
 	::setup_equipment(EQ_MOUNT, HIG"拖"NOR GRN"車"NOR);
 }
