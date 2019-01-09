@@ -6,7 +6,7 @@
  * Date	  : 2003-5-3
  * Note	  : Just For Funny
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
 
  -----------------------------------------
  */
@@ -36,7 +36,7 @@ void do_hook(object me, string arg, object rod)
 
 	if( me->is_delaying() )
 		return tell(me,	me->query_delay_msg());
-		
+
 	if( !query_temp("bait", rod) )
 	{
 		msg("$ME把"+bait->query_idname()+"放到"+rod->query_idname()+"的魚鉤上。\n", me,	0, 1);
@@ -126,7 +126,7 @@ void get_fish(object me)
 	int rod_int, bait_int, fish_sk, break_int;
 	object ob;
 	if( !objectp(me) ) return;
-	
+
 	me->remove_delay(FISHING_DELAY_KEY);
 
 	rod_int = query("rod_level");
@@ -171,7 +171,7 @@ void get_fish(object me)
 
 	delete_temp("bait");
 	delete_temp("status");
-	
+
 	if( objectp(ob)	&& !me->get_object(ob)	)
 	{
 		msg("$ME拿不動那麼多東西了，只見釣起來的"+ob->query_idname()+"又落回河裡。\n", me, 0, 1);
@@ -181,7 +181,7 @@ void get_fish(object me)
 	break_int = (100/(fish_sk||1));
 	if( break_int < 5 ) break_int = 5;
 	if( break_int > 15 ) break_int = 15;
-	
+
 	if( addn_temp("endurance", range_random(-break_int, 1),this_object() ) < 0 )
 	{
 		switch( random(3) )
@@ -194,14 +194,14 @@ void get_fish(object me)
 				set_temp("endurance", -1);
 				break;
 		}
-	}	
+	}
 }
 
 void fishing(object me)
 {
 	if( !objectp(me) ) return;
-	
-	if( !me->cost_stamina(50) )
+
+	if( !me->cost_stamina(5) )
 	{
 		me->remove_delay(FISHING_DELAY_KEY);
 		return tell(me,	pnoun(2, me)+"太累了，無法繼續專心的釣魚。\n");
@@ -222,18 +222,18 @@ void fishing(object me)
 		case 6:
 			if(!query_temp("bait"))
 				msg("\n\e[1;"+3+random(8)+"m浮標突然猛力的沉入水底，可是$ME卻來不及拉上魚竿，魚就這樣跑掉了．．．\n"NOR, me, 0,	1);
-			else 
+			else
 			{
 				msg("\n\e[1;"+3+random(8)+"m浮標突然猛力的沉入水底，可是$ME卻來不及拉上魚竿，魚餌就這樣被吃掉了．．．\n"NOR, me, 0, 1);
 				delete_temp("bait");
 				delete_temp("status");
 			}
-			
+
 			me->remove_delay(FISHING_DELAY_KEY);
 			break;
 		case 7..9:
 			msg("突然間，浮標不停的激烈上下擺動著，$ME順手用力一拉．．．\n", me, 0,	1);
-			if( !me->cost_stamina(50) )	
+			if( !me->cost_stamina(5) )
 			{
 				me->remove_delay(FISHING_DELAY_KEY);
 				msg("當$ME拉到一半時，突然感覺雙手無力，只好放棄釣起這尾魚了。\n", me, 0, 1);
@@ -261,7 +261,7 @@ void do_fishing(object me, string arg)
 	if( query_temp("endurance") < 0 )
 		return tell(me, pnoun(2, me)+"無法用斷掉的"+this_object()->query_name()+"來釣魚。\n");
 
-	// 無法在非地圖中釣魚	
+	// 無法在非地圖中釣魚
 	if( !env->is_maproom() )
 		return tell(me,	pnoun(2, me)+"無法在房間裡釣魚。\n");
 
@@ -282,14 +282,14 @@ void do_fishing(object me, string arg)
 		call_out( (: fishing, me :), 5);
 		me->start_delay(FISHING_DELAY_KEY, 999, pnoun(2, me)+"正忙著釣魚。\n");
 	}
-	else 
+	else
 		return tell(me,	"這附近沒有可以釣魚的地方。\n");
 }
 
 int remove()
 {
 	object env = environment();
-	
+
 	if( objectp(env) )
 		env->remove_delay(FISHING_DELAY_KEY);
 }
@@ -300,7 +300,7 @@ void leave(object ob)
 		ob->remove_delay(FISHING_DELAY_KEY);
 }
 
-mapping	actions	= 
+mapping	actions	=
 ([
 	"fishing" 	: (: do_fishing :),
 	"hook" 		: (: do_hook :)
