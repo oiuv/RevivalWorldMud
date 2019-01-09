@@ -6,7 +6,7 @@
  * Date   : 2005-09-04
  * Note   : 戶外種植/畜牧/養殖指令
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
  *
  -----------------------------------------
  */
@@ -22,8 +22,8 @@
 inherit COMMAND;
 
 #define GROW_STR_COST		20
-#define HARVEST_STR_COST	400
-#define MAINTAIN_STR_COST	300
+#define HARVEST_STR_COST	200
+#define MAINTAIN_STR_COST	100
 #define DEFAULT_GROW		10
 
 string help = @HELP
@@ -35,7 +35,7 @@ string help = @HELP
     grow maintain			- 整地指令，用來提升土地等級，減少天然災害損害與增加產量
     grow maintain '次數'		- 一次整地多次
     grow -d				- 取消目前的生產
-    
+
 HELP;
 
 private void maintain_levelup(object me, array loc)
@@ -65,12 +65,12 @@ private void maintain_levelup(object me, array loc)
 		case 2000000:
 			level = 10; break;
 	}
-	
+
 	if( level )
 	{
 		CITY_D->set_coor_data(loc, "growth_level", level);
 		msg("此地的土地等級隨著$ME的辛勤照料提升為第 "HIY+level+NOR" 級。\n", me, 0, 1);
-		
+
 		if( !SECURE_D->is_wizard(me->query_id(1)) )
 		TOP_D->update_top("maintain", save_variable(loc), CITY_D->query_coor_data(loc, "growth_level"), me->query_idname(), CITY_D->query_coor_data(loc, TYPE));
 	}
@@ -83,20 +83,20 @@ private void do_command(object me, string arg)
 	object ob;
 	string msg="", file;
 	mapping coor_data, growth_data;
-	
+
 	if( (MAP_D->query_map_system(loc)) != CITY_D )
 		return tell(me, pnoun(2, me)+"無法在此進行生產。\n");
-	
+
 	coor_data = CITY_D->query_coor_data(loc);
-	
+
 	if( !mapp(coor_data) )
 		return tell(me, pnoun(2, me)+"無法在此進行生產。\n");
 
 	growth_data = coor_data["growth"];
-	
+
 	if( coor_data["owner"] != me->query_id(1) )
 		return tell(me, "這塊土地不是"+pnoun(2, me)+"的。\n");
-	
+
 	if( !arg )
 		return tell(me, pnoun(2, me)+"想要做什麼樣的生產動作？請 help grow。\n");
 
@@ -104,12 +104,12 @@ private void do_command(object me, string arg)
 	{
 		if( !mapp(growth_data) )
 			return tell(me, "這裡沒有生產任何產品。\n");
-			
+
 		CITY_D->delete_coor_data(loc, "growth");
 		GROWTH_D->set_status(loc);
 		return tell(me, pnoun(2, me)+"取消了此地的產品生產。\n");
 	}
-		
+
 	if( arg == "maintain" || sscanf(arg, "maintain %d", amount) == 1 )
 	{
 		int cost_str;
@@ -129,30 +129,30 @@ private void do_command(object me, string arg)
 
 		if( mapp(growth_data) )
 			return tell(me, "這裡正在生產產品，無法進行整地動作。\n");
-			
+
 		cost_str = to_int(MAINTAIN_STR_COST * pow(amount, 0.9));
 
 		if( !me->cost_stamina(cost_str) )
 			return tell(me, pnoun(2, me)+"的體力不足 "+cost_str+"，無法進行整地的動作。\n");
 
 		msg("$ME耗費 "+cost_str+" 的體力辛勤的保養整地，使土地品質變得較為優良。("WHT"+"HIW+amount+NOR")\n", me, 0, 1);
-		
+
 		// 升級檢查
 		for(int i = 0; i<amount ; ++i)
 			maintain_levelup(me, loc);
-		
+
 		me->add_social_exp(amount * (10+random(30)));
 		GROWTH_D->set_status(loc);
 
 		return;
 	}
-	
+
 	// 收成
 	if( arg == "harvest" )
 	{
 		if( !mapp(growth_data) )
 			return tell(me, "這裡沒有生產任何產品，無法進行收成動作。\n");
-			
+
 		if( !growth_data["wait_for_harvesting"] )
 			return tell(me, "目前還無法進行收成的動作。\n");
 
@@ -160,30 +160,30 @@ private void do_command(object me, string arg)
 			return tell(me, pnoun(2, me)+"的體力不足夠進行收成的動作。\n");
 
 		msg += growth_data["harvest_msg"];
-		
+
 		growth_level = CITY_D->query_coor_data(loc, "growth_level");
 
 		foreach(file, amount in growth_data["harvest"])
 		{
 			ob = new(file);
-			
+
 			if( !objectp(ob) ) continue;
-			
+
 			multiplicand = growth_data["input_amount"] * growth_data["harvest_percent"] * (growth_level+DEFAULT_GROW) / 1000.;
-			
+
 			amount *= multiplicand;
 
 			set_temp("amount", amount, ob);
-		
+
 			msg += "．"+ob->short(1)+"\n";
-	
+
 			me->add_social_exp(random(amount * 30));
 
 			ob->move_to_environment(me);
 		}
-		
+
 		msg(msg, me, 0, 1);
-		
+
 		// 升級檢查
 		maintain_levelup(me, loc);
 
@@ -194,12 +194,12 @@ private void do_command(object me, string arg)
 		GROWTH_D->set_status(loc);
 		return;
 	}
-	
+
 	if( sscanf(arg, "%d %s", amount, arg) != 2 )
 		amount = 1;
 	else if( amount < 1 )
 		return tell(me, "請輸入正確的數量。\n");
-	
+
 	if( !objectp(ob = present(arg)) )
 		return tell(me, pnoun(2, me)+"身上並沒有 "+arg+" 這種東西。\n");
 
@@ -235,20 +235,20 @@ private void do_command(object me, string arg)
 					break;
 			}
 		}
-	
+
 		foreach(string skill, int num in growth_data["skill"])
 			if( me->query_skill_level(skill) < num )
 				return tell(me, pnoun(2, me)+"的"+(SKILL(skill))->query_idname()+"技能不足以生產"+ob->query_idname()+"。(需求等級 Lv"+num+")\n");
-		
+
 		if( !me->cost_stamina(GROW_STR_COST * amount) )
 			return tell(me, pnoun(2, me)+"的體力不夠了。\n");
 
 		growth_data["input_amount"] = amount;
 		growth_data["harvest_percent"] = 100;
-		
+
 		foreach(file, int num in growth_data["material"])
 			growth_data["material"][file] *= amount;
-		
+
 		CITY_D->set_coor_data(loc, "growth", growth_data);
 		GROWTH_D->set_status(loc, growth_data);
 
@@ -264,13 +264,13 @@ private void do_command(object me, string arg)
 				msg("$ME開始在這處養殖場上養殖"+QUANTITY_D->obj(ob, amount)+"。\n"+growth_data["start_msg"], me, ob, 1);
 				break;
 		}
-		
-		
+
+
 		destruct(ob, amount);
-		
+
 		return;
 	}
-	
+
 	if( !mapp(growth_data) )
 		return tell(me, ob->query_idname()+"無法用來進行生產。\n");
 
@@ -282,19 +282,19 @@ private void do_command(object me, string arg)
 		case FISHFARM:
 		{
 			string basename = base_name(ob);
-			
+
 			if( !undefinedp(growth_data["material"][basename]) )
 			{
 				if( !me->cost_stamina(GROW_STR_COST * amount) )
 					return tell(me, pnoun(2, me)+"的體力不夠了。\n");
-				
+
 				me->add_social_exp(random(amount * 50));
-				
+
 				growth_data["material"][basename] -= amount;
-				
+
 				if( growth_data["material"][basename] <= 0 )
 					map_delete(growth_data["material"], basename);
-					
+
 				switch(growth_data["type"])
 				{
 					case FARM:
@@ -316,16 +316,16 @@ private void do_command(object me, string arg)
 					msg(growth_data["start_msg"], me, 0, 1);
 					growth_data["started"] = 1;
 				}
-			
+
 				CITY_D->set_coor_data(loc, "growth", growth_data);
 				GROWTH_D->set_status(loc, growth_data);
 				destruct(ob, amount);
-				
+
 				return;
 			}
 			break;
 		}
 	}
-	
+
 	tell(me, ob->query_idname()+"無法用來進行生產。\n");
 }
