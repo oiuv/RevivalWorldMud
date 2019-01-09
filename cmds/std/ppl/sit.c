@@ -6,7 +6,7 @@
  * Date   : 2002-02-20
  * Note   : 城市指令
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
  *
  -----------------------------------------
  */
@@ -34,7 +34,7 @@ string help = @HELP
 
 HELP;
 
-#define REGEN	60
+#define REGEN	90
 
 private void do_command(object me, string arg)
 {
@@ -51,12 +51,12 @@ private void do_command(object me, string arg)
 
 	myid = me->query_id(1);
 	owner = map_system->query_coor_data(loc, "owner");
-	allow = map_system->query_coor_data(loc, "sit_allow");		
+	allow = map_system->query_coor_data(loc, "sit_allow");
 	type = map_system->query_coor_data(loc, TYPE);
-	
+
 	if( type != PAVILION && type != TREE && type != GRASS )
 		return tell(me, "這個地方沒辦法坐下休息。\n");
-	
+
 	if( map_system == CITY_D )
 	{
 		if( arg  )
@@ -69,13 +69,13 @@ private void do_command(object me, string arg)
 					tell(me, "此休息設施目前只允許擁有者自己使用。\n");
 				else
 					tell(me, "此休息設施目前開放所有人使用。\n");
-				
+
 				return;
 			}
-	
+
 			if( owner != me->query_id(1) )
 				return tell(me, pnoun(2, me)+"不是此地的擁有人，不能對這個休息地點做任何設定。\n");
-				
+
 			if( arg == "-onlyme" )
 			{
 				CITY_D->set_coor_data(loc, "sit_allow", ({ }));
@@ -90,10 +90,10 @@ private void do_command(object me, string arg)
 			{
 				allow = allow || allocate(0);
 				arg = remove_ansi(lower_case(arg));
-				
+
 				if( strlen(arg) > 12 )
 					return tell(me, "請輸入正確的玩家 ID。\n");
-	
+
 				if( member_array(arg, allow) != -1 )
 				{
 					allow -= ({ arg });
@@ -103,16 +103,16 @@ private void do_command(object me, string arg)
 				{
 					if( sizeof(allow) > 20 )
 						return tell(me, "允許名單無法超過 20 人。\n");
-	
+
 					allow |= ({ arg });
 					tell(me, pnoun(2, me)+"允許 "+capitalize(arg)+" 使用此設施。\n");
 				}
-				
+
 				CITY_D->set_coor_data(loc, "sit_allow", allow);
 				return;
-			}	
+			}
 		}
-		
+
 		if( owner != myid && arrayp(allow) && member_array(myid, allow) == -1 )
 			return tell(me, "這是 "+capitalize(owner)+" 私人擁有的設施，"+pnoun(2, me)+"目前不被允許使用。\n");
 	}
@@ -126,8 +126,8 @@ private void do_command(object me, string arg)
 			cost = me->query_stamina_max() - me->query_stamina_cur();
 			msg("$ME倚著"+(map_system->query_coor_data(loc, "short")||"涼亭")+"內的石柱旁，坐在石椅上納涼休息(恢復 "+cost+" 體力)。\n", me, 0, 1);
 			regen = me->stamina_regen()+REGEN;
-			time = 2*cost/regen + 1;
-			
+			time = cost/regen + 1;
+
 			if( time <= 0 )
 				tell(me, "休息完畢。\n");
 			else
@@ -136,14 +136,14 @@ private void do_command(object me, string arg)
 				me->start_delay(REST_DELAY_KEY, time, pnoun(2, me)+"正在"+(map_system->query_coor_data(loc, "short")||"涼亭")+"內休息。\n", "休息完畢。\n", bind((: delete_temp("rest_regen", $(me)), $(me)->set_stamina_full() :), me));
 			}
 			break;
-			
+
 		case TREE:
 			cost = me->query_health_max() - me->query_health_cur();
 			msg("$ME倚著"+(map_system->query_coor_data(loc, "short")||"樹幹")+"，在濃密的樹蔭下享受自然的氣息(恢復 "+cost+" 生命)。\n", me, 0, 1);
-			
+
 			regen = me->health_regen()+REGEN;
 			time = 2*cost/regen + 1;
-			
+
 			if( time <= 0 )
 				tell(me, "休息完畢。\n");
 			else
@@ -152,14 +152,14 @@ private void do_command(object me, string arg)
 				me->start_delay(REST_DELAY_KEY, time, pnoun(2, me)+"正坐在樹下休息。\n", "休息完畢。\n", bind((: delete_temp("rest_regen", $(me)), $(me)->set_health_full() :), me));
 			}
 			break;
-			
+
 		case GRASS:
 			cost = me->query_energy_max() - me->query_energy_cur();
 			msg("$ME斜躺在"+(map_system->query_coor_data(loc, "short")||"草皮")+"上，讓微風輕輕拂拭(恢復 "+cost+" 精神)。\n", me, 0, 1);
-			
+
 			regen = me->energy_regen()+REGEN;
 			time = 2*cost/regen + 1;
-			
+
 			if( time <= 0 )
 				tell(me, "休息完畢。\n");
 			else
