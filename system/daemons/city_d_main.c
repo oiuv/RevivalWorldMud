@@ -184,7 +184,7 @@ mapping query_public_facility(string city)
 						case LIGHT:
 						case 0:
 							facility["空地"]++;
-							break;	
+							break;
 					}
 			}
 
@@ -225,7 +225,7 @@ void material_growup(string city, int num)
 {
 	mapping fund = CITY_D->query_city_info(city, "fund");
 	mapping section_info = cities[city][INFO]["section"][num];
-	
+
 	section_info["resource/metal"] += (fund["山脈"]+30)*2;
 	section_info["resource/stone"] += (fund["山脈"]+30)*2;
 	section_info["resource/water"] += (fund["河流"]+30)*2;
@@ -237,7 +237,7 @@ void material_growup(string city, int num)
 
 	if( section_info["resource/stone"] > 10000 * (fund["山脈"]+30) )
 		section_info["resource/stone"] = 10000 * (fund["山脈"]+30);
-	
+
 	if( section_info["resource/water"] > 10000 * (fund["河流"]+30) )
 		section_info["resource/water"] = 10000 * (fund["河流"]+30);
 
@@ -246,7 +246,7 @@ void material_growup(string city, int num)
 
 	if( section_info["resource/fuel"] > 10000 * (fund["森林"]+30) )
 		section_info["resource/fuel"] = 10000 * (fund["森林"]+30);
-		
+
 	cities[city][INFO]["section"][num] = section_info;
 }
 
@@ -307,7 +307,7 @@ void save_options(string city, int num, int bit)
 		}
 
 		else if( !write_file(CITY_NUM_MAP(city, num), save_variable( copy(cities[city][num][MAP]) ), 1) )
-		{	
+		{
 			CHANNEL_D->channel_broadcast("sys", "無法寫入 "+city+" "+num+" 地圖資料檔");
 			log_file(LOG, "無法寫入 "+city+" "+num+" 地圖資料檔");
 		}
@@ -317,7 +317,7 @@ void save_options(string city, int num, int bit)
 	if( bit & SAVE_ESTATE )
 	{
 		if( !write_file(CITY_NUM_ESTATE(city, num), save_variable(ESTATE_D->query_city_estate(city, num)), 1) )
-		{	
+		{
 			CHANNEL_D->channel_broadcast("sys", "無法寫入 "+city+" "+num+" 房地產資料檔");
 			log_file(LOG, "無法寫入 "+city+" "+num+" 房地產資料檔");
 		}
@@ -343,7 +343,7 @@ varargs void save_city(string city, int num, int bit)
 
 		if( options != "" )
 			CHANNEL_D->channel_broadcast("nch",sprintf("城市：儲存城市「%s」%s(%.6f sec)。",query_city_idname(city, num), options, time_exp/1000000.));
-			
+
 		call_out((:ESTATE_D->handle_freeland($(city), $(num)):), (num+1)*5);
 	}
 	else if( city_exist(city) )
@@ -409,7 +409,7 @@ void reset_city_data(string city)
 	int x, y;
 
 	// 必須是 fallen city 才能夠重設資料
-	if( !cities[city] 
+	if( !cities[city]
 	    || !cities[city][INFO]
 	    || !cities[city][INFO]["fallen"] ) return;
 
@@ -433,7 +433,7 @@ void reset_city_data(string city)
 	// 重設市府資產資料
 	cities[city][INFO]["assets"]			= "0";
 
-	cities[city][INFO]["crashtime"]			= 0;	
+	cities[city][INFO]["crashtime"]			= 0;
 	// 重設分區資料
 	cities[city][INFO]["section"] 			= allocate_mapping(0);
 	cities[city][INFO]["section"][0] 		= allocate_mapping(0);
@@ -456,7 +456,7 @@ void reset_city_data(string city)
 			default:
 				cities[city][0][DATA][y][x] = DEFAULT_COOR_DATA;
 				cities[city][0][RMAP][y][x] = "．";
-				cities[city][0][MAP][y][x] = "．";	
+				cities[city][0][MAP][y][x] = "．";
 				break;
 			}
 		}
@@ -550,7 +550,7 @@ void occupy_new_city(object me, string cityid, string cityname, string moneyunit
 	CHANNEL_D->channel_broadcast("news", me->query_idname()+"花費了 $"+defaultmoneyunit+" "+NUMBER_D->number_symbol(OCCUPY_MONEY)+" 整頓並佔領了"+query_city_idname(city)+"，並取名為「"+cityname+"<"+cityid+">」，貨幣單位為「"+moneyunit+"」。");
 
 	if( newcity != city )
-	{	
+	{
 		// 切換 cityroom
 		set("city", newcity, cities[city][0][CROOM]);
 		set("num", 0, cities[city][0][CROOM]);
@@ -1053,20 +1053,20 @@ varargs void delete_coor_data(array loc, mixed prop, int bit)
 	if( !mapp(cities[city][num][DATA][y][x]) ) return;
 
 	// 若無 prop 則重新初始化房間資訊, 人口維持原狀
-	if( !prop ) 
+	if( !prop )
 	{
 		if(this_object()->query_coor_data(loc, TYPE) == BRIDGE)
-		{ 	
-			this_object()->set_coor_data(loc, TYPE, RIVER); 
+		{
+			this_object()->set_coor_data(loc, TYPE, RIVER);
 			this_object()->set_coor_icon(loc, BBLU HIB"～"NOR);
 			this_object()->delete_coor_data(loc, "owner");
 		}
 		else
 		{
 			int origin_region = CITY_D->query_coor_data(loc, "region");
-	
+
 			cities[city][num][DATA][y][x] = DEFAULT_COOR_DATA;
-	
+
 			switch( origin_region  )
 			{
 			case AGRICULTURE_REGION:
@@ -1282,7 +1282,7 @@ varargs mixed query_city_info(string city, string prop)
 	if( !undefinedp(prop) )
 		return copy(cities[city][INFO][prop]);
 	else
-		return copy(cities[city][INFO]); 
+		return copy(cities[city][INFO]);
 }
 
 /* 刪除城市基本資訊 */
@@ -1383,7 +1383,7 @@ void change_city_name(string city, string name)
 	len = noansi_strlen(name);
 	if(  len > 10 || len % 2 ) return 0;
 
-	// 非純中文之 city name	
+	// 非純中文之 city name
 	foreach( int a in remove_ansi(name) )
 	if(  a <= ' ' || --len%2 && (a < 160 || a > 255) )
 		return 0;
@@ -1395,7 +1395,7 @@ void change_city_name(string city, string name)
 	set_city_info(city, "name", name);
 }
 
-// 修改子城市名稱 
+// 修改子城市名稱
 void change_section_name(string city, int num, string name)
 {
 	int len;
@@ -1406,7 +1406,7 @@ void change_section_name(string city, int num, string name)
 	len = noansi_strlen(name);
 	if(  len > 10 || len % 2 ) return 0;
 
-	// 非純中文之 city name	
+	// 非純中文之 city name
 	foreach( int a in remove_ansi(name) )
 	if(  a <= ' ' || --len%2 && (a < 160 || a > 255) )
 		return 0;
@@ -1418,7 +1418,7 @@ void change_section_name(string city, int num, string name)
 	set_section_info(city, num, "name", name);
 
 	CHANNEL_D->channel_broadcast("news", original_idname+"正式更名為「"+query_city_idname(city, num)+"」");
-}		
+}
 
 
 
@@ -1517,7 +1517,7 @@ varargs object *query_outdoor_players(string city, int num)
 
 mapping query_cities_info()
 {
-	return copy(cities);	
+	return copy(cities);
 }
 
 int query_sections(string city)
@@ -1700,12 +1700,12 @@ string coor_short_name(array loc)
 {
 	string owner = CITY_D->query_coor_data(loc, "owner");
 	string personal_short = CITY_D->query_coor_data(loc ,"short");
-	
+
 	if( owner )
 	{
 		if( belong_to_government(owner) )
 			owner = query_city_name(owner[11..]);
-		else if( belong_to_enterprise(owner) ) 
+		else if( belong_to_enterprise(owner) )
 			owner = ENTERPRISE_D->query_enterprise_color_id(owner[11..]);
 		else
 			owner = capitalize(owner)+" ";
@@ -1759,7 +1759,7 @@ string coor_short_name(array loc)
 			//if( estdata )
 			//	building_info = BUILDING_D->query_building(estdata["type"]);
 
-			//if( !building_info )	
+			//if( !building_info )
 				return personal_short || (owner+"的建築物門口");
 			//else
 			//	return personal_short || (owner+"的"+building_info[0]);
@@ -1830,7 +1830,7 @@ mixed cookys_test()
 string show_map(array loc)
 {
 	int i, j, k, l, dir, x, y, num, range,
-	x_start, y_start, 
+	x_start, y_start,
 	x_center, y_center;
 
 	string city, retmap, emblem;
@@ -1897,7 +1897,7 @@ string show_map(array loc)
 	map3 = allocate(CITY_VISION_LENGTH, 0);
 
 	if( range == (CITY_VISION_WIDTH/3)*(CITY_VISION_WIDTH/3) )
-	{	
+	{
 		map3 = allocate(CITY_VISION_LENGTH, allocate(CITY_VISION_WIDTH, 1));
 		for(j=0;j<CITY_VISION_LENGTH;j++)
 			map2[j] = map2[j][x_start..x_start+CITY_VISION_WIDTH-1];
@@ -1925,7 +1925,7 @@ string show_map(array loc)
 				else if( !map3[j][i] && (i-x+x_start)*(i-x+x_start)*0.5 + (j-y+y_start)*(j-y+y_start) <= range )
 					map3[j][i] = 1;
 			}
-		}		
+		}
 	}
 
 	for(j=0;j<CITY_VISION_LENGTH;j++)
@@ -2085,7 +2085,7 @@ varargs varargs int valid_move(object me, string direction, array loc)
 	{
 		if( data[TYPE] == WALL )
 			return -2;
-	}	
+	}
 
 	switch(data[TYPE])
 	{
@@ -2178,7 +2178,7 @@ varargs void move(object me, string direction, int automove)
 			broadcast(loc, my_idname+"朝"+CHINESE_D->to_chinese(direction)+"離開。\n", 0, me);
 			me->move(nextloc);
 			broadcast(nextloc, my_idname+weather_go[NATURE_D->query_nature(query_maproom(loc))[NATURE_WEATHER][WEATHER_ID]]+"，自"+CHINESE_D->to_chinese(corresponding[direction])+"走了過來。\n", 0, me);
-			
+
 			me->follower_move(loc, nextloc);
 			return;
 		}
@@ -2309,13 +2309,13 @@ varargs void move(object me, string direction, int automove)
 		mapping fund = query_city_info(city, "fund");
 
 
-		if( coortype == ROAD && fund["道路"] < 120 && !random((fund["道路"]+5)*(fund["道路"]+5)) )
+		if( coortype == ROAD && fund["道路"] < 120 && !random((fund["道路"]+50)*(fund["道路"]+50)) )
 		{
 			msg("$ME突然一腳踩進年久失修的道路坑洞中，鼠蹊部狠狠地撞上路旁的"+HIY+random_thing+NOR+"。\n", me, 0, 1);
 			me->faint();
 			CHANNEL_D->channel_broadcast("city", me->query_idname()+"突然一腳踩進年久失修的道路坑洞("+query_city_id(city, num)+" "+(nextloc[X]+1)+","+(nextloc[Y]+1)+")中，鼠蹊部狠狠地撞上路旁的"+HIY+random_thing+NOR+"。", me);
 		}
-		else if( coortype == BRIDGE && fund["橋樑"] < 120 && !random((fund["橋樑"]+5)*(fund["橋樑"]+5)) )
+		else if( coortype == BRIDGE && fund["橋樑"] < 120 && !random((fund["橋樑"]+50)*(fund["橋樑"]+50)) )
 		{
 			msg("$ME腳底下的橋樑突然斷裂，鼠蹊部狠狠地撞上橋墩上的"+HIY+random_thing+NOR+"。\n", me, 0, 1);
 			me->faint();
@@ -2415,7 +2415,7 @@ int is_mayor(string city, mixed ob)
 		id = ob;
 	else if( objectp(ob) )
 	{
-		if( !stringp(id = ob->query_id(1)) ) 
+		if( !stringp(id = ob->query_id(1)) )
 			return 0;
 	}
 	else
@@ -2434,7 +2434,7 @@ int is_officer(string city, mixed ob)
 		id = ob;
 	else if( objectp(ob) )
 	{
-		if( !stringp(id = ob->query_id(1)) ) 
+		if( !stringp(id = ob->query_id(1)) )
 			return 0;
 	}
 	else
@@ -2453,7 +2453,7 @@ int is_mayor_or_officer(string city, mixed ob)
 		id = ob;
 	else if( objectp(ob) )
 	{
-		if( !stringp(id = ob->query_id(1)) ) 
+		if( !stringp(id = ob->query_id(1)) )
 			return 0;
 	}
 	else
@@ -2465,9 +2465,9 @@ int is_mayor_or_officer(string city, mixed ob)
 int query_city_num(string city)
 {
 	int num;
-	
+
 	while(city_exist(city, ++num));
-	
+
 	return num;
 }
 
@@ -2483,7 +2483,7 @@ mapping query_city_fund(string city)
 	facilities = query_public_facility(city);
 
 	num = query_city_num(city);
-	
+
 	result["山脈"] 		= count(fund["山脈"], "*", 320*400*num);
 	result["森林"] 		= count(fund["森林"], "*", 320*400*num);
 	result["河流"] 		= count(fund["河流"], "*", 160*400*num);
@@ -2491,8 +2491,8 @@ mapping query_city_fund(string city)
 	result["道路"] 		= count(count(fund["道路"], "*", facilities["道路"]), "*", 20);
 	result["橋樑"] 		= count(count(fund["橋樑"], "*", facilities["橋樑"]), "*", 600);
 
-	result["空地"] 		= count(facilities["空地"], "*", 2000);	
-		
+	result["空地"] 		= count(facilities["空地"], "*", 2000);
+
 	result["公共建築物"]	= count(facilities["公共建築物"], "*", 1000000);
 
 	return result;
@@ -2560,14 +2560,14 @@ void fund_handler()
 void add_collection_record(string city, int num, string id, string material, int amount)
 {
 	if( !city_exist(city, num) ) return;
-	
-	
+
+
 	if( !mapp(cities[city][INFO]["section"][num]["material_collection_record"]) )
 		cities[city][INFO]["section"][num]["material_collection_record"] = allocate_mapping(0);
-		
+
 	if( !mapp(cities[city][INFO]["section"][num]["material_collection_record"][id]) )
 		cities[city][INFO]["section"][num]["material_collection_record"][id] = allocate_mapping(0);
-		
+
 	cities[city][INFO]["section"][num]["material_collection_record"][id][material] += amount;
 }
 
@@ -2609,7 +2609,7 @@ string query_city_scale(string city, int num)
 	int level;
 
 	if( !city_exist(city, num) ) return 0;
-		
+
 	level = cities[city][INFO]["section"][num]["level"];
 
 	return CITY_SCALE[level];
@@ -2629,13 +2629,13 @@ void rehash_flourish(string city)
 	array myestates;
 	int register_open;
 	object ob;
-	
+
 	if( !city_exist(city, num) ) return;
 
 	cityuser = sizeof(filter_array(users(), (: query("city", $1) == $(city) :)));
 
 	cities[city][INFO]["totalflourish"] = 0;
-	
+
 	if( cities[city][INFO]["fallen"] ) return;
 
 	// 檢查城市是否有開放註冊
@@ -2645,7 +2645,7 @@ void rehash_flourish(string city)
 	cities[city][INFO]["register_open"] = register_open;
 
 	for(num=0;city_exist(city, num);num++)
-	{	
+	{
 		flourish = 0;
 
 		data = cities[city][num][DATA];
@@ -2662,12 +2662,12 @@ void rehash_flourish(string city)
 			if( !find_player(id) && user_exists(id) )
 			{
 				ob = load_user(id);
-				
+
 				last_on_time = query("last_on/time", ob);
-				
+
 				if( last_on_time > 0 )
 					time_cost = now_time - last_on_time;
-				
+
 				destruct(ob);
 			}
 
@@ -2677,10 +2677,10 @@ void rehash_flourish(string city)
 					continue;
 
 				myflourish = ESTATE_D->query_estate_flourish(estdata);
-				
+
 				if( time_cost > 0 )
 					myflourish /= 1 + time_cost/86400.;
-				
+
 				flourish += to_int(myflourish);
 			}
 		}
@@ -2702,7 +2702,7 @@ void rehash_flourish(string city)
 		cities[city][INFO]["section"][num]["flourish"] = flourish;
 
 		cities[city][INFO]["section"][num]["resident"] = to_int(pow(to_float(flourish)*1000, 0.8));
-		
+
 		cities[city][INFO]["totalflourish"] += flourish;
 
 		level = cities[city][INFO]["section"][num]["level"];
@@ -2711,13 +2711,13 @@ void rehash_flourish(string city)
 		if( cities[city][INFO]["section"][num]["resident"] < level*1000000 && level > 0 )
 		{
 			cities[city][INFO]["section"][num]["level"] = level-1;
-			CHANNEL_D->channel_broadcast("news", query_city_idname(city, num)+"居民人口總數少於"HIW" "+NUMBER_D->number_symbol(level*1000000)+" "NOR"人，規模降為「"+CITY_SCALE[level-1]+"」");	
+			CHANNEL_D->channel_broadcast("news", query_city_idname(city, num)+"居民人口總數少於"HIW" "+NUMBER_D->number_symbol(level*1000000)+" "NOR"人，規模降為「"+CITY_SCALE[level-1]+"」");
 		}
 		// 升級
 		else if( cities[city][INFO]["section"][num]["resident"] > (level+1)*1000000 && level < 4 )
 		{
 			cities[city][INFO]["section"][num]["level"] = level+1;
-			CHANNEL_D->channel_broadcast("news", query_city_idname(city, num)+"居民人口總數突破"HIW" "+NUMBER_D->number_symbol((level+1)*1000000)+" "NOR"人，規模升為「"+CITY_SCALE[level+1]+"」");	
+			CHANNEL_D->channel_broadcast("news", query_city_idname(city, num)+"居民人口總數突破"HIW" "+NUMBER_D->number_symbol((level+1)*1000000)+" "NOR"人，規模升為「"+CITY_SCALE[level+1]+"」");
 		}
 	}
 }
