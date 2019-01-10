@@ -4,13 +4,13 @@
  * File   : selfcharge.c
  * Author : Clode@RevivalWorld
  * Date   : 2006-02-09
- * Note   : 
+ * Note   :
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
 
  -----------------------------------------
  */
- 
+
 #include <ansi.h>
 #include <buff.h>
 
@@ -56,9 +56,9 @@ void start_effect(object ob)
 	string condition_key = "condition/"+replace_string(base_name(this_object()), "/","#")+"/";
 
 	set(condition_key+BUFF_SOCIAL_EXP_BONUS, 2, ob);
-	set(condition_key+BUFF_STAMINA_MAX, 50, ob);
-	set(condition_key+BUFF_HEALTH_MAX, 50, ob);
-	set(condition_key+BUFF_ENERGY_MAX, 50, ob);
+	set(condition_key+BUFF_STAMINA_MAX, 250, ob);
+	set(condition_key+BUFF_HEALTH_MAX, 250, ob);
+	set(condition_key+BUFF_ENERGY_MAX, 250, ob);
 
 	msg("$ME¶i¤J¡u"CONDITION_NAME"¡vªº"CONDITION_TYPE"ª¬ºA¡C\n", ob, 0, 1);
 }
