@@ -21,7 +21,7 @@
 
 inherit ROOM_ACTION_MOD;
 
-#define REGEN	80
+#define REGEN	180
 
 // 製作紀念品
 void do_make(object me, string arg)
@@ -32,10 +32,10 @@ void do_make(object me, string arg)
 
         if( query("owner", env) != me->query_id(1) )
         	return tell(me, "這裡不是"+pnoun(2, me)+"的家。\n");
-        	
+
 	if( !arg )
 		return tell(me, pnoun(2, me)+"要製作什麼手工藝品？(souvenir)\n");
-	
+
 	if( sscanf(arg, "%d %s", num, option) == 2 )
 	{
 		if( num <= 0 )
@@ -68,7 +68,7 @@ void do_make(object me, string arg)
 				default: break;
 			}
 		}
-		
+
 		if( !objectp(metal) || count(query_temp("amount", metal)||1, "<", num) )
 			return tell(me, pnoun(2, me)+"附近沒有足夠的"+MATERIAL(METAL)->query_idname()+"。\n");
 		if( !objectp(stone) || count(query_temp("amount", stone)||1, "<", num) )
@@ -79,23 +79,23 @@ void do_make(object me, string arg)
 			return tell(me, pnoun(2, me)+"附近沒有足夠的"+MATERIAL(WATER)->query_idname()+"。\n");
 		if( !objectp(fuel) || count(query_temp("amount", fuel)||1, "<", num) )
 			return tell(me, pnoun(2, me)+"附近沒有足夠的"+MATERIAL(FUEL)->query_idname()+"。\n");
-			
+
 		if( !me->cost_energy(50 * num) )
 			return tell(me, pnoun(2, me)+"沒有足夠的精神可以用來製作紀念品了。\n");
-			
+
 		destruct(metal, num);
 		destruct(stone, num);
 		destruct(wood, num);
 		destruct(water, num);
 		destruct(fuel, num);
-		
+
 		ob = new("/product/souvenir_"+env->query_city());
 
 		if( num > 1 )
 			set_temp("amount", to_string(num), ob);
 
 		msg("$ME靠著細膩的手工仔細地製作了 "+num+" 個"+ob->query_idname()+"。\n", me, 0, 1);
-		
+
 		ob->move(me);
 	}
 	else
@@ -109,7 +109,7 @@ void do_readmagazine(object me, string arg)
 
         if( query("owner", env) != me->query_id(1) )
         	return tell(me, "這裡不是"+pnoun(2, me)+"的家。\n");
-        	
+
         msg("$ME坐在客廳裡翻開雜誌，輕鬆地閱讀來自世界各地的消息，充實了許多知識，也讓一身僵硬的肌肉輕鬆下來。\n", me, 0, 1);
 
 	me->start_condition(SELFCHARGE);
@@ -129,24 +129,24 @@ void do_sleep(object me, string arg)
 
         if( query("owner", env) != me->query_id(1) )
         	return tell(me, "這裡不是"+pnoun(2, me)+"的家。\n");
-       
+
 	if( me->is_delaying() )
 		return tell(me, me->query_delay_msg());
-		
+
 	stamina_cost = me->query_stamina_max() - me->query_stamina_cur();
 	health_cost = me->query_health_max() - me->query_health_cur();
 	energy_cost = me->query_energy_max() - me->query_energy_cur();
 
 	msg("$ME舒服地躺在床上，一眨眼就睡著了(恢復 "+stamina_cost+" 體力、"+health_cost+" 生命、"+energy_cost+" 精神)。\n", me, 0, 1);
-	
+
 	stamina_time = 2 * stamina_cost / (me->stamina_regen() + REGEN) + 1;
 	health_time = 2 * health_cost / (me->health_regen() + REGEN) + 1;
 	energy_time = 2 * energy_cost / (me->energy_regen() + REGEN)+ 1;
-	
+
 	max_time = stamina_time;
 	if( health_time > max_time ) max_time = health_time;
 	if( energy_time > max_time ) max_time = energy_time;
-		
+
 	if( max_time <= 0 )
 		tell(me, pnoun(2, me)+"睜開眼睛站了起來，感覺精神百倍。\n");
 	else
@@ -170,7 +170,7 @@ void do_ogc(object me, string arg)
 		return tell(me, me->query_delay_msg());
 
         msg("$ME從抽屜拿出奇怪的道具，跑到床上開始做起奇怪的動作...喔...哦...哇...呦...耶。\n", me, 0, 1);
-        
+
         me->faint();
 }
 
@@ -191,7 +191,7 @@ HELP,
 "readmagazine":
 @HELP
 閱讀雜誌的指令，用法如下：
- 
+
 readmagazine		- 輕鬆地閱讀雜誌
 
 HELP,
@@ -199,7 +199,7 @@ HELP,
 "make":
 @HELP
 製作工藝品的指令，用法如下：
- 
+
 make souvenir		- 製作純手工城市紀念品(需耗費五大原料各一個)
 make '數量' souvenir	- 一次製作大量的紀念品
 
