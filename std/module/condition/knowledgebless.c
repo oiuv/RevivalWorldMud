@@ -4,20 +4,20 @@
  * File   : knowledgebless.c
  * Author : Clode@RevivalWorld
  * Date   : 2005-01-26
- * Note   : 
+ * Note   :
  * Update :
- *  o 2000-00-00  
+ *  o 2000-00-00
 
  -----------------------------------------
  */
- 
+
 #include <ansi.h>
 #include <buff.h>
 
 #define CONDITION_ID		"knowledgebless"
 #define CONDITION_NAME		HIG"知識"NOR GRN"的眷顧"NOR
 #define CONDITION_TYPE		"加持"
-#define DEFAULT_TIME		300
+#define DEFAULT_TIME		6000
 #define DEFAULT_HEART_BEAT	0
 
 // 回傳狀態英文名稱
@@ -53,7 +53,7 @@ int query_default_condition_heart_beat()
 // 啟動狀態時的效果
 void start_effect(object ob)
 {
-	set("condition/"+replace_string(base_name(this_object()), "/","#")+"/"+BUFF_INT, 1, ob);
+	set("condition/"+replace_string(base_name(this_object()), "/","#")+"/"+BUFF_INT, 3, ob);
 	msg("$ME進入「"CONDITION_NAME"」的"CONDITION_TYPE"狀態。\n", ob, 0, 1);
 }
 
