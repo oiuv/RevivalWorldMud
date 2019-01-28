@@ -20,7 +20,7 @@ nomask void startup_living()
 	if( !userp(this_object()) )
 		CHAR_D->create_npc(this_object());
 
-	set_heart_beat(10);
+	set_heart_beat(1);
 }
 
 nomask int is_living()
